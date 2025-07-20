@@ -35,4 +35,5 @@ jobs:
           run: |
             export PATH=$PATH:~/.platformio/penv/bin
             cd repo/ci
+            pwd
             pio run -e ${{ matrix.platform }}

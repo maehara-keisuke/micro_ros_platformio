@@ -38,7 +38,8 @@ void error_loop() {
   }
 }
 
-void timer_callback(rcl_timer_t* timer, int64_t last_call_time) {
+void timer_callback(rcl_timer_t* timer, int64_t last_call_time) 
+{
   RCLC_UNUSED(last_call_time);
   if (timer != NULL) {
     RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
