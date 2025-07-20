@@ -28,8 +28,8 @@ jobs:
           run: |
             cd repo
             pwd
-            find . -regex '.*\.\(cpp\|hpp\|c\|h\)' -exec clang-format -style=file:".clang-format" -i {} \;
-            git diff --exit-code
+            set -e
+            find . -regex '.*\.\(cpp\|hpp\|c\|h\)' -exec clang-format -dry-run -style=file:".clang-format" -i {} \;
         - name: Build
           shell: bash
           run: |
