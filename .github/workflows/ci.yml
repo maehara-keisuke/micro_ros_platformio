@@ -26,8 +26,7 @@ jobs:
           run: apt install -y clang-format
         - name: Check formatting
           run: |
-            cd repo/ci
-            bash check_formatting.sh
+            bash repo/ci/check_formatting.sh
         - name: Build
           shell: bash
           run: |
