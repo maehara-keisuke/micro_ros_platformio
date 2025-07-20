@@ -23,7 +23,7 @@ jobs:
         - name: Install environment
           uses: ./repo/.github/actions/platformio-env
         - name: Install clang-format
-          run: sudo apt install -y clang-format
+          run: apt install -y clang-format
         - name: Check formatting
           run: |
             find . -regex '.*\.\(cpp\|hpp\|c\|h\)' -exec clang-format -style=file:"repo/.clang-format" -i {} \;
