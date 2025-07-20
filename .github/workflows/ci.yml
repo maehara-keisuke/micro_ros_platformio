@@ -26,12 +26,8 @@ jobs:
           run: apt install -y clang-format
         - name: Check formatting
           run: |
-            cd repo
-            find . -regex '.*\.\(cpp\|hpp\|c\|h\)' -exec clang-format -dry-run -Werror -style=file:".clang-format" -i {} \;
-            formatting_violated=$?
-            if [formatting_violated=1]; then
-              exit 1
-            fi
+            cd repo/ci
+            bash check_formatting.sh
         - name: Build
           shell: bash
           run: |
