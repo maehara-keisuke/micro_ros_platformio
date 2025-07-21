@@ -7,14 +7,12 @@
 #endif
 
 #include <micro_ros_platformio.h>
-
-#include <stdio.h>
-#include <rcl/rcl.h>
 #include <rcl/error_handling.h>
-#include <rclc/rclc.h>
+#include <rcl/rcl.h>
 #include <rclc/executor.h>
-
+#include <rclc/rclc.h>
 #include <std_msgs/msg/int32.h>
+#include <stdio.h>
 
 // Test custom transports
 #if defined(MICRO_ROS_TRANSPORT_ARDUINO_CUSTOM)
@@ -24,10 +22,14 @@ bool platformio_transport_open(struct uxrCustomTransport* transport) {
 bool platformio_transport_close(struct uxrCustomTransport* transport) {
   return false;
 };
-size_t platformio_transport_write(struct uxrCustomTransport* transport, const uint8_t* buf, size_t len, uint8_t* err) {
+size_t platformio_transport_write(struct uxrCustomTransport* transport,
+                                  const uint8_t* buf, size_t len,
+                                  uint8_t* err) {
   return 0;
 };
-size_t platformio_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err) {
+size_t platformio_transport_read(struct uxrCustomTransport* transport,
+                                 uint8_t* buf, size_t len, int timeout,
+                                 uint8_t* err) {
   return 0;
 };
 #endif
@@ -51,14 +53,16 @@ rcl_timer_t timer;
 #define RCCHECK(fn) \
   { \
     rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) { error_loop(); } \
+    if ((temp_rc != RCL_RET_OK)) { \
+      error_loop(); \
+    } \
   }
 #define RCSOFTCHECK(fn) \
   { \
     rcl_ret_t temp_rc = fn; \
-    if ((temp_rc != RCL_RET_OK)) {} \
+    if ((temp_rc != RCL_RET_OK)) { \
+    } \
   }
-
 
 void error_loop() {
   while (1) {
@@ -76,7 +80,6 @@ void timer_callback(rcl_timer_t* timer, int64_t last_call_time) {
 }
 
 void setup() {
-
 #if defined(MICRO_ROS_TRANSPORT_ARDUINO_SERIAL)
   Serial.begin(115200);
   set_microros_serial_transports(Serial);
@@ -86,7 +89,8 @@ void setup() {
   IPAddress agent_ip(192, 168, 1, 113);
   size_t agent_port = 8888;
 
-  set_microros_native_ethernet_transports(local_mac, local_ip, agent_ip, agent_port);
+  set_microros_native_ethernet_transports(local_mac, local_ip, agent_ip,
+                                          agent_port);
 #elif defined(MICRO_ROS_TRANSPORT_ARDUINO_WIFI) || defined(MICRO_ROS_TRANSPORT_ARDUINO_WIFI_NINA)
   IPAddress agent_ip(192, 168, 1, 113);
   size_t agent_port = 8888;
@@ -102,14 +106,12 @@ void setup() {
   IPAddress agent_ip(192, 168, 1, 113);
   size_t agent_port = 8888;
 
-  set_microros_ethernet_transports(local_ip, gateway, netmask, agent_ip, agent_port, "micro-ros-eth");
+  set_microros_ethernet_transports(local_ip, gateway, netmask, agent_ip,
+                                   agent_port, "micro-ros-eth");
 #elif defined(MICRO_ROS_TRANSPORT_ARDUINO_CUSTOM)
   rmw_uros_set_custom_transport(
-    MICROROS_TRANSPORTS_FRAMING_MODE,
-    NULL,
-    platformio_transport_open,
-    platformio_transport_close,
-    platformio_transport_write,
+    MICROROS_TRANSPORTS_FRAMING_MODE, NULL, platformio_transport_open,
+    platformio_transport_close, platformio_transport_write,
     platformio_transport_read);
 #else
 #error "No transport defined"
@@ -122,25 +124,21 @@ void setup() {
 
   allocator = rcl_get_default_allocator();
 
-  //create init_options
+  // create init_options
   RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
 
   // create node
-  RCCHECK(rclc_node_init_default(&node, "microros_platformio_node", "", &support));
+  RCCHECK(
+    rclc_node_init_default(&node, "microros_platformio_node", "", &support));
 
   // create publisher
   RCCHECK(rclc_publisher_init_default(
-    &publisher,
-    &node,
-    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+    &publisher, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
     "microros_platformio_publisher"));
 
   // create timer,
-  RCCHECK(rclc_timer_init_default(
-    &timer,
-    &support,
-    RCL_MS_TO_NS(100),
-    timer_callback));
+  RCCHECK(rclc_timer_init_default(&timer, &support, RCL_MS_TO_NS(100),
+                                  timer_callback));
 
   // create executor
   RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
